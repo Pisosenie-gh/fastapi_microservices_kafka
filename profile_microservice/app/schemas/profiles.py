@@ -14,10 +14,10 @@ class ProfileBase(BaseModel):
 
 
 class ProfileResponse(ProfileBase):
-    id: UUID
-    user_id: str
-    created_at: datetime
-    updated_at: datetime
+    id: UUID | None
+    user_id: UUID | None
+    created_at: datetime | None
+    updated_at: datetime  | None
 
 
 class ProfileUpdate(ProfileBase):

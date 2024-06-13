@@ -1,8 +1,9 @@
+from uuid import UUID
 from pydantic import BaseModel
 
 
 class User(BaseModel):
-    id: int
+    id: UUID
     username: str | None
     email: str | None
     is_active: bool | None

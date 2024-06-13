@@ -3,7 +3,7 @@ import asyncio
 import json
 
 from typing import Optional
-from sqlalchemy.ext.asyncio import AsyncSession
+import uuid
 
 from aiokafka import AIOKafkaConsumer
 
@@ -86,17 +86,22 @@ class KafkaConsumer:
             event = json.loads(msg.value.decode("utf-8"))
             event_type = event["type"]
             user_data = event["user"]
+            print("DSADASDSADSA")
+            print(event)
+            print(user_data)
             logger.info(f"Consumed event: {event_type} for user: {user_data}")
 
             if event_type == "user_created":
                 await self.handle_user_created(user_data)
-                
-    async def handle_user_created(self, user_data: dict):
+
+    @staticmethod
+    async def handle_user_created(user_data: dict):
         async for session in get_session():
             async with session.begin():
-                user_id = str(user_data.get("id"))
+                user_id = user_data.get("id")
                 profile = Profile(
-                    user_id=user_id,
+                    user_id=str(user_id),
+                    id=uuid.uuid4()
                 )
                 session.add(profile)
                 await session.commit()

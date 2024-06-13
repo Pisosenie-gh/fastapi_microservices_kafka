@@ -1,3 +1,4 @@
+import uuid
 from app.api.deps import get_session
 from app.core.security import auth_validator
 from app.kafka_config.kafka_producer import kafka_producer
@@ -8,12 +9,15 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import List
+from sqlalchemy import exc
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
-@router.get("/", response_model=List[UserSchema], dependencies=[Depends(auth_validator.extract_token_data)])
-async def get_all_users(session: AsyncSession = Depends(get_session)) -> List[UserSchema]:
+@router.get("/", response_model=List[UserSchema],
+            dependencies=[Depends(auth_validator.extract_token_data)])
+async def get_all_users(session: AsyncSession = Depends(get_session)
+                        ) -> List[UserSchema]:
     """
     Retrieve all users
     """
@@ -21,8 +25,10 @@ async def get_all_users(session: AsyncSession = Depends(get_session)) -> List[Us
     return users.scalars().all()
 
 
-@router.get("/{user_id}", response_model=UserSchema, dependencies=[Depends(auth_validator.extract_token_data)])
-async def get_user_by_id(user_id: int, session: AsyncSession = Depends(get_session)):
+@router.get("/{user_id}", response_model=UserSchema,
+            dependencies=[Depends(auth_validator.extract_token_data)])
+async def get_user_by_id(user_id: int,
+                         session: AsyncSession = Depends(get_session)):
     """
     Get user by ID
     """
@@ -48,8 +54,9 @@ async def create_user(
     try:
         session.add(user)
         await session.commit()
-        await kafka_producer.send('user_events', {"type": "user_created", "user": user.dict()})
-    except Exception:
-        raise HTTPException(status_code=409, detail="User with this username already exists")
-    
+        kafka_data = {"type": "user_created", "user": user.dict()}
+        await kafka_producer.send('user_events', kafka_data)
+    except exc.IntegrityError:
+        raise HTTPException(status_code=409,
+                            detail="User with this username already exists")
     return UserSchema.from_orm(user)

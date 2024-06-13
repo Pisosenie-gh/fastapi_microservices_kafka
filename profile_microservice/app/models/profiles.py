@@ -7,8 +7,8 @@ from app.models.base import Base
 
 class Profile(Base):
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, nullable=False)
-    user_id = Column(String, unique=True, index=True, nullable=False)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4(), nullable=False)
+    user_id = Column(UUID(as_uuid=True), nullable=False, index=True)
     name = Column(Text, nullable=True)
     lastname = Column(Text, nullable=True)
     birthday = Column(DateTime, nullable=True)

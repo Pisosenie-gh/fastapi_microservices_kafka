@@ -14,6 +14,7 @@ async def test_login_400(client: AsyncSession):
     res = await client.post("/api/v1/login/", data=login_data)
     assert res.status_code == 400
 
+
 @pytest.mark.asyncio()
 async def test_login_200(client: AsyncSession, session: AsyncConnection):
     session.add(UserFactory())
