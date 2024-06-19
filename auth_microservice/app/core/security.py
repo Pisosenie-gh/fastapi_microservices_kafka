@@ -39,7 +39,7 @@ class AuthValidator:
         """
         try:
             decoded_token = jwt.decode(
-                encoded_token, self.secret_key, algorithms=self.algorithms
+                encoded_token, self._secret_key, algorithms=self.algorithms
             )
             return TokenPayload(user_id=decoded_token["user_id"])
         except jwt.JWTError:
@@ -94,11 +94,11 @@ class AuthValidator:
     async def extract_token_data(
             self,
             token: str = Depends(
-                OAuth2PasswordBearer(tokenUrl="/api/v1/login")
+                OAuth2PasswordBearer(tokenUrl="/auth/api/v1/login")
             )
     ) -> TokenPayload:
         try:
-            decoded_token = jwt.decode(token, self.secret_key, algorithms=self._algorithms)
+            decoded_token = jwt.decode(token, self._secret_key, algorithms=self._algorithms)
             token_data = TokenPayload(**decoded_token)
         except (jwt.JWTError, ValidationError) as error:
             raise HTTPException(status_code=403, detail=str(error))

@@ -27,7 +27,7 @@ async def get_all_users(session: AsyncSession = Depends(get_session)
 
 @router.get("/{user_id}", response_model=UserSchema,
             dependencies=[Depends(auth_validator.extract_token_data)])
-async def get_user_by_id(user_id: int,
+async def get_user_by_id(user_id: str,
                          session: AsyncSession = Depends(get_session)):
     """
     Get user by ID
@@ -47,6 +47,7 @@ async def create_user(
     Create a new user
     """
     user = UserModel(
+        id=str(uuid.uuid4()),
         username=user_data.username,
         email=user_data.email,
         hashed_password=await auth_validator.hash_password(user_data.password)
@@ -57,6 +58,6 @@ async def create_user(
         kafka_data = {"type": "user_created", "user": user.dict()}
         await kafka_producer.send('user_events', kafka_data)
     except exc.IntegrityError:
-        raise HTTPException(status_code=409,
+        raise HTTPException(status_code=400,
                             detail="User with this username already exists")
     return UserSchema.from_orm(user)

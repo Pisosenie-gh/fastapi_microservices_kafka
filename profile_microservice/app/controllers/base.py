@@ -10,9 +10,9 @@ CreateSchemaType = Type[BaseModel]
 UpdateSchemaType = Type[BaseModel]
 
 
-class BaseModelController(object):
+class BaseModelController():
     def __init__(self, model: Type[ModelType]):
-        super().__init__(model)
+        self.model = model
 
     async def get(
         self, db: AsyncSession, id: Any

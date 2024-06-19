@@ -17,7 +17,7 @@ class ProfileResponse(ProfileBase):
     id: UUID | None
     user_id: UUID | None
     created_at: datetime | None
-    updated_at: datetime  | None
+    updated_at: datetime | None
 
 
 class ProfileUpdate(ProfileBase):

@@ -11,4 +11,4 @@ class AuthenticationSuccessResponse(BaseModel):
 
 
 class TokenPayload(BaseModel):
-    user_id: int
+    user_id: str
