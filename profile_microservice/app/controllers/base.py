@@ -98,7 +98,7 @@ class BaseModelController():
         # Convert all datetime objects to UTC
         for key, value in data_dict.items():
             if isinstance(value, datetime.datetime):
-                data_dict[key] = value
+                data_dict[key] = value.replace(tzinfo=None)
 
         for key, value in data_dict.items():
             setattr(db_obj, key, value)

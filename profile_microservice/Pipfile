@@ -22,6 +22,7 @@ factory-boy = "*"
 pydantic-settings = "*"
 greenlet = "*"
 aiokafka = "*"
+kafka-python = "*"
 
 [dev-packages]
 pytest = "*"

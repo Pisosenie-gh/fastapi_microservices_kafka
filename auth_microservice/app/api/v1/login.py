@@ -16,9 +16,14 @@ async def login(
         data: Annotated[OAuth2PasswordRequestForm, Depends()],
         session: AsyncSession = Depends(get_session),
 ):
-    user = await auth_validator.authenticate(session, username=data.username, password=data.password)
+    user = await auth_validator.authenticate(session,
+                                             username=data.username,
+                                             password=data.password)
     if not user:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
+        raise HTTPException(
+            status_code=400,
+            detail="Incorrect username or password"
+            )
     return {
         "access_token": await auth_validator.create_access_token(user),
         "token_type": "Bearer",

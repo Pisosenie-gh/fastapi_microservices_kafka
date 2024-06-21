@@ -17,6 +17,14 @@ services:
       timeout: 10s
       retries: 5
 
+  mongo_chat_db:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db 
+
   profile_db:
     image: postgres
     volumes:
@@ -89,6 +97,23 @@ services:
     volumes:
       - ./auth_microservice:/app
 
+  chat_microservice:
+    build:
+      context: ./chat_microservice
+      dockerfile: Dockerfile
+    environment:
+      PROJECT_NAME: CHAT-MICROSERVICE
+      MONGO_URI: "mongodb://mongo:27017"
+      SECRET_KEY: 12345689
+    ports:
+      - '8002:8002'
+    depends_on:
+      - mongo_chat_db
+
+    volumes:
+      - ./chat_microservice:/app
+
+
   profile_microservice:
     build:
       context: ./profile_microservice
@@ -114,20 +139,26 @@ services:
     volumes:
       - ./profile_microservice:/app
 
-  frontend:
-    build:
-      context: ./chat-frontend
-      dockerfile: Dockerfile
-    ports:
-      - "80:80"
-    environment:
-      - NODE_ENV=production
-    volumes:
-      - ./chat-frontend:/app
-      - ./chat-frontend/node_modules:/app/node_modules
+  # frontend:
+  #   build:
+  #     context: ./chat-frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "80:80"
+  #   environment:
+  #     - NODE_ENV=production
+  #   volumes:
+  #     - ./chat-frontend:/app
+  #     - ./chat-frontend/node_modules:/app/node_modules
+
+  #   links:
+  #     - auth_microservice
+  #     - profile_microservice
+  #     - chat_microservice
 
 volumes:
   auth_db_volume:
     driver: local
   profile_db_volume:
     driver: local
+  mongo_data:

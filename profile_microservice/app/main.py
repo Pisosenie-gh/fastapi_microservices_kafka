@@ -13,12 +13,11 @@ logger = logging.getLogger(__name__)
 
 def create_application() -> FastAPI:
     application = FastAPI(title=settings.PROJECT_NAME)
-    origins = ["*"]
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=origins,
+        allow_origins="*",
         allow_credentials=True,
-        allow_methods=["GET", "POST", "PUT", "DELETE"],
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allow_headers=["*"],
     )
     application.include_router(router)

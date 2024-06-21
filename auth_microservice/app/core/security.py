@@ -39,7 +39,7 @@ class AuthValidator:
         """
         try:
             decoded_token = jwt.decode(
-                encoded_token, self._secret_key, algorithms=self.algorithms
+                encoded_token, self._secret_key, algorithms=self._algorithms
             )
             return TokenPayload(user_id=decoded_token["user_id"])
         except jwt.JWTError:
@@ -56,13 +56,15 @@ class AuthValidator:
         Returns:
             str: The generated access token.
         """
-        expiration_time = datetime.utcnow() + timedelta(
+        expiration_time = datetime.now() + timedelta(
             minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
         )
         token_payload = {"exp": expiration_time, "user_id": str(user.id)}
         secret_key = settings.SECRET_KEY.get_secret_value()
         algorithm = settings.ALGORITHM
-        return jwt.encode(token_payload, secret_key, algorithm=algorithm)
+        token = jwt.encode(token_payload, secret_key, algorithm=algorithm)
+        print(token)
+        return token
     
     @staticmethod
     async def check_password(plain_password: str, hashed_password: str) -> bool:
@@ -94,7 +96,7 @@ class AuthValidator:
     async def extract_token_data(
             self,
             token: str = Depends(
-                OAuth2PasswordBearer(tokenUrl="/auth/api/v1/login")
+                OAuth2PasswordBearer()
             )
     ) -> TokenPayload:
         try:
@@ -109,7 +111,7 @@ class AuthValidator:
     ) -> Optional[User]:
         result = await session.execute(select(User).filter_by(username=username))
         user = result.scalars().first()
-        if user and self.check_password(password, user.hashed_password):
+        if user and await self.check_password(password, user.hashed_password):
             return user
         return None
 

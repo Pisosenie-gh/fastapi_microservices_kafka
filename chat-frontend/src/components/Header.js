@@ -4,7 +4,6 @@ import {
   Stack,
   Heading,
   Flex,
-  Text,
   ButtonGroup,
   Button,
   useDisclosure
@@ -72,9 +71,11 @@ function Header(props){
       {...props}
     >
       <Flex align="center" mr={5}>
+        <Link to='/'>
         <Heading as="h1" size="lg" letterSpacing={"tighter"}>
           WebSocket Chat
         </Heading>
+        </Link>
       </Flex>
 
       <Box display={{ base: "block", md: "none" }} onClick={handleToggle}>
@@ -109,12 +110,19 @@ function Header(props){
     <Button colorScheme='teal' variant='solid' onClick={handleLogout}>
       Выход
     </Button>
-    <Link to="/profile">
+    <Link to="/profile/me">
 
       <Button colorScheme='teal' variant='solid'>
       Профиль
     </Button>
     </Link>
+
+    <Link to="/users">
+
+  <Button colorScheme='teal' variant='solid'>
+  Пользователи
+  </Button>
+  </Link>
     </ButtonGroup>
 )}
 
